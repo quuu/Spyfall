@@ -14,8 +14,11 @@ const port = 3000
 MongoClient.connect(url, { useUnifiedTopology: true }, function(err, client) {
   assert.equal(null, err);
   const db = client.db('spyfall');
-  const collec = db.collection('spyfall');
-  db.eventlog.createIndex({ "lastModifiedDate": 1 }, { expireAfterSeconds: 3600 })
+
+  db.collection('games').dropIndex({ "created": 1 })
+
+  db.collection('games').createIndex({ "created": 1 }, { expireAfterSeconds: 50000 })
+
   console.log("Connected successfully to server");
 
   app.get('/', (req, res) => res.send('Testing World!'))
@@ -26,13 +29,23 @@ MongoClient.connect(url, { useUnifiedTopology: true }, function(err, client) {
 
     const uuid = uuidv4();
 
-    collec.insertOne()
+    console.log(uuid)
 
+ 
+
+    db.collection('games').insertOne({'gamename': uuid.toString(), 'players':[]}, function (err, items) {
+      if (err != null) {
+        return console.log(err)
+      }
+      // console.log(err)
+      // console.log(items)
+    })
+
+    res.send('Created new game')
 
     
 
 
-    
     // generate uuid for game
 
   })
@@ -46,7 +59,6 @@ MongoClient.connect(url, { useUnifiedTopology: true }, function(err, client) {
   }])
  
  
-  client.close();
 });
 
 
