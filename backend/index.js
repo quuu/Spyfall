@@ -3,6 +3,8 @@ const MongoClient = require('mongodb').MongoClient;
 const assert = require('assert');
 const uuidv4 = require('uuid/v4');
 const app = express()
+const http = require('http').createServer(app);
+const io = require('socket.io')(http);
 
 const url = 'mongodb://localhost:27017';
 
@@ -23,6 +25,14 @@ MongoClient.connect(url, { useUnifiedTopology: true }, function(err, client) {
 
   app.get('/', (req, res) => res.send('Testing World!'))
 
+  io.on('connection', function (socket) {
+    console.log("a user connected")
+    console.log(socket)
+    socket.on('disconnect', function () {
+      console.log('a user disconnected')
+    })
+  })
+
 
   // responsible for creating a new unique id for a game and expring it
   app.get('/newgame', (req, res) => {
@@ -31,7 +41,8 @@ MongoClient.connect(url, { useUnifiedTopology: true }, function(err, client) {
 
     console.log(uuid)
 
- 
+
+    let players=[]
 
     db.collection('games').insertOne({'gamename': uuid.toString(), 'players':[]}, function (err, items) {
       if (err != null) {
@@ -63,5 +74,6 @@ MongoClient.connect(url, { useUnifiedTopology: true }, function(err, client) {
 
 
 
-
-app.listen(port, () => console.log(`Example app listening on port ${port}!`))
+http.listen(port, function(){
+  console.log('listening on *:3000');
+});
