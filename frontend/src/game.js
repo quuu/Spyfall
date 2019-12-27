@@ -21,7 +21,17 @@ export class NewGame extends React.Component{
 
   registerUser() {
     // call lobby component with the user name
-    console.log(this.state.name)
+    fetch('http://127.0.0.1:3001/newgame', {
+      method: 'POST',
+      body: JSON.stringify(this.state.name),
+      mode: 'cors',
+      headers: {
+        'Access-Control-Allow-Origin':'*'
+      }
+    }).then((resp) => resp.json())
+      .then(function (data) {
+      console.log(data)
+    })
   }
 
 
@@ -29,7 +39,7 @@ export class NewGame extends React.Component{
     return (
       <center>
 
-        Name<input type="text" value={this.state.name} onChange={this.handleChange}></input>
+        Name<input type="text" onChange={this.handleChange}></input>
         <button onClick={() => { this.registerUser() }}>Go</button>
       </center>
     )
@@ -66,9 +76,6 @@ export class JoinGame extends React.Component {
 
 
 function joinGame() {
-
-}
-function registerUser() {
 
 }
 // export default NewGame;

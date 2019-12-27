@@ -3,12 +3,14 @@ const MongoClient = require('mongodb').MongoClient;
 const assert = require('assert');
 const uuidv4 = require('uuid/v4');
 const app = express()
+var cors = require('cors')
 const http = require('http').createServer(app);
 const io = require('socket.io')(http);
 
 const url = 'mongodb://localhost:27017';
 
 
+app.use(cors())
 
 const port = 3001
 
@@ -35,22 +37,23 @@ MongoClient.connect(url, { useUnifiedTopology: true }, function(err, client) {
 
 
   // responsible for creating a new unique id for a game and expring it
-  app.get('/newgame', (req, res) => {
+  app.post('/newgame', (req, res) => {
 
-    const uuid = uuidv4();
+    console.log('got request')
+    // const uuid = uuidv4();
 
-    console.log(uuid)
+    // console.log(uuid)
 
 
-    let players=[]
+    // let players=[]
 
-    db.collection('games').insertOne({'gamename': uuid.toString(), 'players':[]}, function (err, items) {
-      if (err != null) {
-        return console.log(err)
-      }
-      // console.log(err)
-      // console.log(items)
-    })
+    // db.collection('games').insertOne({'gamename': uuid.toString(), 'players':[]}, function (err, items) {
+    //   if (err != null) {
+    //     return console.log(err)
+    //   }
+    //   // console.log(err)
+    //   // console.log(items)
+    // })
 
     res.send('Created new game')
 
@@ -75,5 +78,5 @@ MongoClient.connect(url, { useUnifiedTopology: true }, function(err, client) {
 
 
 http.listen(port, function(){
-  console.log('listening on *:3000');
+  console.log('listening on *:'+ port);
 });
