@@ -11,21 +11,24 @@ export class NewGame extends React.Component{
     this.state = {
       name: '',
     }
-
     this.handleChange = this.handleChange.bind(this);
+
   }
 
   handleChange(event) {
-    this.setState({name: event.target.name});
+    this.setState({ name: event.target.value });
   }
 
   registerUser() {
     // call lobby component with the user name
     fetch('http://127.0.0.1:3001/newgame', {
       method: 'POST',
-      body: JSON.stringify(this.state.name),
-      mode: 'cors',
+      body: JSON.stringify({
+        'name': this.state.name
+      }),
+      // mode: 'cors',
       headers: {
+        'Content-Type': 'application/json',
         'Access-Control-Allow-Origin':'*'
       }
     }).then((resp) => resp.json())
@@ -39,7 +42,7 @@ export class NewGame extends React.Component{
     return (
       <center>
 
-        Name<input type="text" onChange={this.handleChange}></input>
+        Name<input type="text" value={this.state.name} onChange={this.handleChange}></input>
         <button onClick={() => { this.registerUser() }}>Go</button>
       </center>
     )
