@@ -1,7 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './game.css';
-import  App  from './App.js'
+import App from './App.js'
+import socketIOClient from 'socket.io-client';
 
 
 
@@ -46,6 +47,8 @@ export class NewGame extends React.Component{
 
 
   render() {
+
+    
     return (
       <center>
 
@@ -95,6 +98,11 @@ export class InGame extends React.Component {
 
 
   render() {
+    
+    let socket = socketIOClient('http://192.168.1.135:3001')
+    socket.on('testing', function (data) {
+      console.log('got it')
+    })
     return (
       <div>
         <h1>You are currently in a game</h1>

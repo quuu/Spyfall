@@ -31,11 +31,25 @@ MongoClient.connect(url, { useUnifiedTopology: true }, function(err, client) {
   app.get('/', (req, res) => res.send('Testing World!'))
 
   io.on('connection', function (socket) {
+    console.log(socket.handshake.address)
     console.log("a user connected")
-    console.log(socket)
+    // io.emit('testing', { hello: 'world' })
+
+   
+    socket.on('create', function (room) {
+      socket.join(room)
+    })
+  
+    // console.log(socket)
     socket.on('disconnect', function () {
       console.log('a user disconnected')
     })
+    socket.on('other event', function (data) {
+      console.log(data)
+    })
+    for (let i = 0; i < 10;i++) {
+      io.sockets.emit('testing', { hello: 'everyone' })
+    }
   })
 
 
@@ -80,6 +94,8 @@ MongoClient.connect(url, { useUnifiedTopology: true }, function(err, client) {
   app.get(['/joingame', (req, res) => {
 
     // if uuid is legit, join it
+
+
 
   }])
  
