@@ -10,6 +10,14 @@ import socketIOClient from 'socket.io-client';
 const socket = socketIOClient('http://192.168.1.135:3001')
 export default socket;
 
+socket.on('starting', function (data) {
+  console.log("starting from server")
+})
+
+socket.on('ending', function (data) {
+  console.log("game ending from server")
+})
+
 
 
 // handles creating a new game
@@ -82,7 +90,14 @@ export class JoinGame extends React.Component {
   }
 
   joinGame() {
-    socket.emit('join', [this.state.game_id, this.state.name])
+    socket.emit('join', [this.state.game_id, this.state.name], function (details) {
+      const room = details['room']
+      if (details['success'] === "joined room") {
+        localStorage.setItem('currentGame', room)
+        console.log("successfully joined room")
+        ReactDOM.render(<InGame game_id={room}/>, document.getElementById('root'))
+      }
+    })
   }
 
   render() {
@@ -109,24 +124,29 @@ export class InGame extends React.Component {
     }
   }
 
+  // leaving game
   leaveGame() {
     const game = localStorage.getItem('currentGame')
     socket.emit('leave', game)
     localStorage.clear()
     ReactDOM.render(<App />, document.getElementById('root'))
-    
+  }
+
+  // starting game
+  startGame() {
+    const game = localStorage.getItem('currentGame')
+    socket.emit('start',  game)
   }
 
 
   render() {
 
-
-    let array = []
-
     socket.on('newplayer', function (data) {
       console.log(data);
       console.log("new player")
+
     })
+
     // for (let i = 0; i < this.props.players.length; i++){
     //   array.push(<h2 key={i}>{this.props.players[i]}</h2>)
     // }
@@ -137,11 +157,13 @@ export class InGame extends React.Component {
         <h1>{this.props.game_id}</h1>
 
         <h1>Current players</h1>
-        <div>
+        {/* <div>
           {array}
-        </div>
+        </div> */}
 
         <button onClick={() => { this.leaveGame() }}>Leave game</button>
+
+        <button onClick={() => { this.startGame() }}>Start game</button>
       </div>
     )
   }

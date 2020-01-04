@@ -65,7 +65,7 @@ MongoClient.connect(url, { useUnifiedTopology: true }, function(err, client) {
 
 
     // join a room
-    socket.on('join', function (data) {
+    socket.on('join', function (data, fn) {
       console.log(data)
       console.log(io.sockets.adapter.rooms)
 
@@ -74,11 +74,15 @@ MongoClient.connect(url, { useUnifiedTopology: true }, function(err, client) {
         socket.join(data[0])
 
         io.to(data[0]).emit('newplayer', 'testing')
+        
+        fn({'success': 'joined room', 'room': data[0]})
 
       }
       else {
         console.log('not valid room')
+        fn({'success':'invalid room'})
       }
+      console.log(io.sockets.adapter.rooms)
 
     })
   
@@ -92,6 +96,8 @@ MongoClient.connect(url, { useUnifiedTopology: true }, function(err, client) {
     // start the game
     socket.on('start', function (data) {
       console.log("starting game")
+      console.log(data)
+      io.to(data).emit('starting')
     })
 
     // quitting the game

@@ -9,11 +9,6 @@ function App() {
 
   const in_game = localStorage.getItem('currentGame');
 
-  // var socket = socketIOClient('http://192.168.1.135:3001')
-  // socket.on('testing', function (data) { 
-  //   console.log(data)
-  //   socket.emit('other event', { my:'data'})
-  // })
   if (in_game != null) {
     return (
       <InGame game_id={in_game} />
