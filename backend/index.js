@@ -47,7 +47,7 @@ MongoClient.connect(url, { useUnifiedTopology: true }, function(err, client) {
 
     // create the room code
     // as a substring of the entire uuid
-    const room_code = uuid.substr(0,5)
+    const roomCode = uuid.substr(0,5)
 
     console.log(req.body)
     // const name = req.body.
@@ -56,13 +56,14 @@ MongoClient.connect(url, { useUnifiedTopology: true }, function(err, client) {
     let players = []
     
 
-    // db.collection('games').insertOne({'gamename': uuid.toString(), 'players':[]}, function (err, items) {
-    //   if (err != null) {
-    //     return console.log(err)
-    //   }
-    //   // console.log(err)
-    //   // console.log(items)
-    // })
+    db.collection('games').insertOne({'gamename': roomCode, 'players':[]}, function (err, items) {
+      if (err != null) {
+        return console.log(err)
+      }
+      console.log("successfully registered game " + roomCode)
+      // console.log(err)
+      // console.log(items)
+    })
 
 
     // res.send({"room":uuid.substr(0,5)})
