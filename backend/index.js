@@ -85,6 +85,12 @@ MongoClient.connect(url, { useUnifiedTopology: true }, function(err, client) {
       console.log(io.sockets.adapter.rooms)
 
     })
+
+    socket.on('rejoin', function (data, fn) {
+      socket.join(data)
+      console.log("rejoined room " + data)
+      fn({'success':'rejoined room'})
+    })
   
 
     // when a player quits, leave the room 
@@ -96,13 +102,14 @@ MongoClient.connect(url, { useUnifiedTopology: true }, function(err, client) {
     // start the game
     socket.on('start', function (data) {
       console.log("starting game")
-      console.log(data)
+      // console.log(data)
       io.to(data).emit('starting')
     })
 
     // quitting the game
-    socket.on('disconnect', function () {
+    socket.on('disconnect', function() {
       console.log('a user disconnected')
+
     })
     socket.on('other event', function (data) {
       console.log(data)

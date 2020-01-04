@@ -10,6 +10,7 @@ import socketIOClient from 'socket.io-client';
 const socket = socketIOClient('http://192.168.1.135:3001')
 export default socket;
 
+// event listening for starting a game and ending a game
 socket.on('starting', function (data) {
   console.log("starting from server")
 })
@@ -20,7 +21,7 @@ socket.on('ending', function (data) {
 
 
 
-// handles creating a new game
+// component responsible for creating a new game
 export class NewGame extends React.Component{
 
   constructor(props) {
@@ -67,6 +68,7 @@ export class NewGame extends React.Component{
   }
 }
 
+// component responsible for joining an existing game
 export class JoinGame extends React.Component {
 
   
@@ -81,14 +83,15 @@ export class JoinGame extends React.Component {
     this.handleChangeName= this.handleChangeName.bind(this);
   }
 
+  // handle changing input fields
   handleChangeGameID(event) {
     this.setState({ game_id: event.target.value });
   }
-
   handleChangeName(event) {
     this.setState({ name: event.target.value });
   }
 
+  // joining game
   joinGame() {
     socket.emit('join', [this.state.game_id, this.state.name], function (details) {
       const room = details['room']
@@ -141,15 +144,20 @@ export class InGame extends React.Component {
 
   render() {
 
+
     socket.on('newplayer', function (data) {
       console.log(data);
       console.log("new player")
-
     })
 
-    // for (let i = 0; i < this.props.players.length; i++){
-    //   array.push(<h2 key={i}>{this.props.players[i]}</h2>)
-    // }
+
+    const currentGame = localStorage.getItem('currentGame')
+    if (currentGame != null) {
+      socket.emit('rejoin', currentGame, function (details) {
+        console.log(details)
+      })
+    }
+
     return (
       <div>
         <h1>You are currently in a game</h1>
