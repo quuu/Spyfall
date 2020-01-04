@@ -28,76 +28,71 @@ MongoClient.connect(url, { useUnifiedTopology: true }, function(err, client) {
 
   console.log("Connected successfully to server");
 
-  app.get('/', (req, res) => res.send('Testing World!'))
 
+  // once connected, it means they are creating a new room or joining a room
   io.on('connection', function (socket) {
+
+    // printing out the ip address to save for later
     console.log(socket.handshake.address)
     console.log("a user connected")
-    // io.emit('testing', { hello: 'world' })
 
    
-    socket.on('create', function (room) {
-      socket.join(room)
+    // creating a new room for people to join
+    socket.on('create', function (firstPlayer, fn) {
+      
+      console.log("the firstPlayer is ")
+      console.log(firstPlayer)
+      // socket.join(room)
+
+      const uuid = uuidv4();
+
+      // create the room code
+      // as a substring of the entire uuid
+      const roomCode = uuid.substr(0, 5)
+
+      console.log('Created room: ' + roomCode)
+
+      let players = []
+
+      players.push(firstPlayer)
+
+      // subscrive player to the room for updates
+      socket.join(roomCode)
+
+      db.collection('games').insertOne({'gamename': roomCode, 'players':players}, function (err, items) {
+        if (err != null) {
+          return console.log(err)
+        }
+        console.log("successfully registered game " + roomCode)
+        // console.log(err)
+        // console.log(items)
+      })
+
+      // return the room code and the current players to the emitter
+      fn({'room': roomCode, 'players':players})
+    })
+
+
+    // join a room
+    socket.on('join', function (data) {
+      console.log(io.sockets.adapter.rooms)
+
     })
   
-    // console.log(socket)
+
+    // start the game
+    socket.on('start', function (data) {
+      console.log("starting game")
+    })
+
+    // quitting the game
     socket.on('disconnect', function () {
       console.log('a user disconnected')
     })
     socket.on('other event', function (data) {
       console.log(data)
     })
-    for (let i = 0; i < 10;i++) {
-      io.sockets.emit('testing', { hello: 'everyone' })
-    }
   })
-
-
-  // responsible for creating a new unique id for a game and expring it
-  app.post('/newgame', (req, res) => {
-
-
-    const uuid = uuidv4();
-
-    // create the room code
-    // as a substring of the entire uuid
-    const roomCode = uuid.substr(0,5)
-
-    console.log(req.body)
-    // const name = req.body.
-
-
-    let players = []
-    
-
-    db.collection('games').insertOne({'gamename': roomCode, 'players':[]}, function (err, items) {
-      if (err != null) {
-        return console.log(err)
-      }
-      console.log("successfully registered game " + roomCode)
-      // console.log(err)
-      // console.log(items)
-    })
-
-
-
-    res.send({"room":roomCode})
-    
-
-
-    // generate uuid for game
-
-  })
-
-
-  // repsonsible for verying a game and joining it
-  app.get(['/joingame', (req, res) => {
-
-    // if uuid is legit, join it
-
-
-
-  }])
  
  
 });

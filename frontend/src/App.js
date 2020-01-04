@@ -2,8 +2,6 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './App.css';
 import { NewGame, JoinGame, InGame } from './game.js';
-// import socketIOClient from 'socket.io-client';
-
 
 
 
@@ -39,4 +37,5 @@ function createNewGame() {
 function joinGame() {
   ReactDOM.render(<JoinGame />, document.getElementById('root'));
 }
+
 export default App;
