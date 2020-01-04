@@ -66,7 +66,8 @@ MongoClient.connect(url, { useUnifiedTopology: true }, function(err, client) {
     })
 
 
-    // res.send({"room":uuid.substr(0,5)})
+
+    res.send({"room":roomCode})
     
 
 

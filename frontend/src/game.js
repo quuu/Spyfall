@@ -1,5 +1,7 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 import './game.css';
+import  App  from './App.js'
 
 
 
@@ -33,7 +35,12 @@ export class NewGame extends React.Component{
       }
     }).then((resp) => resp.json())
       .then(function (data) {
-      console.log(data)
+        
+        localStorage.setItem('currentGame', 'yes')
+        const game = data['room']
+        ReactDOM.render(<InGame game_id={game}/>, document.getElementById('root'));
+        // render new room
+
     })
   }
 
@@ -73,6 +80,29 @@ export class JoinGame extends React.Component {
         Name<input type="text" name="name"></input>
 
       </center>
+    )
+  }
+}
+
+export class InGame extends React.Component {
+
+  constructor(props) {
+    super(props)
+    this.state = {
+      game_id: '',
+    }
+  }
+
+
+  render() {
+    return (
+      <div>
+        <h1>You are currently in a game</h1>
+        <br/>
+        <h1>{this.props.game_id}</h1>
+
+        <button onClick={() => { localStorage.clear(); ReactDOM.render(<App/>, document.getElementById('root'))}}>Leave game</button>
+      </div>
     )
   }
 }

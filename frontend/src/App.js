@@ -2,12 +2,20 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './App.css';
 import { Route, Link, BrowserRouter as Router } from 'react-router-dom';
-import { NewGame, JoinGame } from './game.js';
+import { NewGame, JoinGame, InGame } from './game.js';
 
 
 
 
 function App() {
+
+  const in_game = localStorage.getItem('currentGame');
+
+  if (in_game != null) {
+    return (
+      <InGame game_id={in_game} />
+    )
+  }
   return (
     <center>
       <button onClick={ () => { createNewGame() }}>New Game</button>
