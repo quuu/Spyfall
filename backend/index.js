@@ -42,7 +42,6 @@ MongoClient.connect(url, { useUnifiedTopology: true }, function(err, client) {
       
       console.log("the firstPlayer is ")
       console.log(firstPlayer)
-      // socket.join(room)
 
       const uuid = uuidv4();
 
@@ -58,15 +57,7 @@ MongoClient.connect(url, { useUnifiedTopology: true }, function(err, client) {
 
       // subscrive player to the room for updates
       socket.join(roomCode)
-
-      db.collection('games').insertOne({'gamename': roomCode, 'players':players}, function (err, items) {
-        if (err != null) {
-          return console.log(err)
-        }
-        console.log("successfully registered game " + roomCode)
-        // console.log(err)
-        // console.log(items)
-      })
+      
 
       // return the room code and the current players to the emitter
       fn({'room': roomCode, 'players':players})
@@ -75,10 +66,28 @@ MongoClient.connect(url, { useUnifiedTopology: true }, function(err, client) {
 
     // join a room
     socket.on('join', function (data) {
+      console.log(data)
       console.log(io.sockets.adapter.rooms)
+
+      // if the room exists to join
+      if (io.sockets.adapter.rooms[data[0]] != null) {
+        socket.join(data[0])
+
+        io.to(data[0]).emit('newplayer', 'testing')
+
+      }
+      else {
+        console.log('not valid room')
+      }
 
     })
   
+
+    // when a player quits, leave the room 
+    socket.on('leave', function (data) {
+      socket.leave(data)
+      console.log("a player has left " + data)
+    })
 
     // start the game
     socket.on('start', function (data) {

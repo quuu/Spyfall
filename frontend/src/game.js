@@ -82,7 +82,7 @@ export class JoinGame extends React.Component {
   }
 
   joinGame() {
-    socket.emit('join', this.state.name, this.state.game_id)
+    socket.emit('join', [this.state.game_id, this.state.name])
   }
 
   render() {
@@ -109,11 +109,24 @@ export class InGame extends React.Component {
     }
   }
 
+  leaveGame() {
+    const game = localStorage.getItem('currentGame')
+    socket.emit('leave', game)
+    localStorage.clear()
+    ReactDOM.render(<App />, document.getElementById('root'))
+    
+  }
+
 
   render() {
 
 
     let array = []
+
+    socket.on('newplayer', function (data) {
+      console.log(data);
+      console.log("new player")
+    })
     // for (let i = 0; i < this.props.players.length; i++){
     //   array.push(<h2 key={i}>{this.props.players[i]}</h2>)
     // }
@@ -128,7 +141,7 @@ export class InGame extends React.Component {
           {array}
         </div>
 
-        <button onClick={() => { localStorage.clear(); ReactDOM.render(<App/>, document.getElementById('root'))}}>Leave game</button>
+        <button onClick={() => { this.leaveGame() }}>Leave game</button>
       </div>
     )
   }
