@@ -83,9 +83,11 @@ MongoClient.connect(url, { useUnifiedTopology: true }, function(err, client) {
       // if the room exists to join
       if (io.sockets.adapter.rooms[data[0]] != null) {
 
+        console.log('broadcasting new player to people ---')
         io.to(data[0]).emit('newplayer', data[1])
 
         games[data[0]].push(data[1])
+        console.log(games)
 
         // socket.join(data[0])
         fn({'success': 'joined room', 'room': data[0], 'players':games[data[0]]})
@@ -98,6 +100,10 @@ MongoClient.connect(url, { useUnifiedTopology: true }, function(err, client) {
 
     })
 
+    socket.on('test', function (data, fn) {
+      socket.emit('newplayer', 'T')
+    })
+
     socket.on('rejoin', function (data, fn) {
       socket.join(data)
       console.log(io.sockets.adapter.rooms)
@@ -108,9 +114,11 @@ MongoClient.connect(url, { useUnifiedTopology: true }, function(err, client) {
 
     // when a player quits, leave the room 
     socket.on('leave', function (data) {
+      console.log(io.sockets.adapter.rooms)
       socket.leave(data)
+      console.log(io.sockets.adapter.rooms)
       console.log("a player has left " + data)
-      io.to(data).emit('playerleave', )
+      io.to(data).emit('playerleave')
     })
 
     // start the game

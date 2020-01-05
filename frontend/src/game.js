@@ -50,13 +50,14 @@ export class NewGame extends React.Component{
       localStorage.setItem('players', JSON.stringify(players))
       
       // render with socket
-      ReactDOM.render(<InGame game_id={room}/>, document.getElementById('root'));
+      ReactDOM.render(<InGame game_id={room} players={players} />, document.getElementById('root'));
 
     });
   }
 
 
   render() {
+
     
     return (
       <center>
@@ -94,7 +95,7 @@ export class JoinGame extends React.Component {
   // joining game
   joinGame() {
     socket.emit('join', [this.state.game_id, this.state.name], function (details) {
-      // console.log(details)
+      console.log(details)
       // if succesfully joined
       if (details['success'] === "joined room") {
 
@@ -106,9 +107,9 @@ export class JoinGame extends React.Component {
         const players = details['players']
         localStorage.setItem('players', JSON.stringify(players))
 
-        // console.log("successfully joined room")
+        console.log("successfully joined room")
         
-        // render the room 
+        // render the players       
         ReactDOM.render(<InGame game_id={room}/>, document.getElementById('root'))
       }
     })
@@ -143,6 +144,7 @@ export class InGame extends React.Component {
   // leaving game
   leaveGame() {
     const game = localStorage.getItem('currentGame')
+    // socket.off('newplayer')
     socket.emit('leave', game )
     localStorage.clear()
     ReactDOM.render(<App />, document.getElementById('root'))
@@ -155,14 +157,19 @@ export class InGame extends React.Component {
   }
 
 
+  addPlayerToState(player) {
+    this.setState({
+      otherPlayers: this.state.otherPlayers.concat(player)
+    })
+  }
+
   removePlayerFromState() {
     
   }
 
   componentDidMount() {
     this._isMounted = true
-    
-   
+
 
     const currentGame = localStorage.getItem('currentGame')
     if (currentGame != null) {
@@ -181,11 +188,7 @@ export class InGame extends React.Component {
       let players = JSON.parse(localStorage.getItem('players'))
 
       // append the newest player to the list
-      console.log("players looks like before ")
-      console.log(players)
       players.push(data)
-      console.log("players looks like  after")
-      console.log(players)
 
       // clear the storage 
       localStorage.removeItem('players')
@@ -193,11 +196,6 @@ export class InGame extends React.Component {
       // set the player array
       localStorage.setItem('players', JSON.stringify(players))
       
-      // add player to list to display
-      //  playersList.push(<h3 key={data}>{data}</h3>)
-      // this.setState({
-      //     otherPlayers: this.state.otherPlayers.concat(data)
-      //   })
       if (this._isMounted) {
         this.forceUpdate()
       }
@@ -207,6 +205,16 @@ export class InGame extends React.Component {
 
   componentWillUnmount(){
     this._isMounted = false
+
+    socket.off('newplayer')
+  }
+
+
+  sendSelf() {
+    socket.emit('test', function (data) {
+      console.log('received self test')
+      console.log(data)
+    })
   }
 
 
@@ -226,6 +234,7 @@ export class InGame extends React.Component {
         <button onClick={() => { this.leaveGame() }}>Leave game</button>
 
         <button onClick={() => { this.startGame() }}>Start game</button>
+        <button onClick={() => { this.sendSelf() }}>Self test</button>
       </div>
     )
   }
