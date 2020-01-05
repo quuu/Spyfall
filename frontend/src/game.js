@@ -2,12 +2,12 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './game.css';
 import App from './App.js'
-import socketIOClient from 'socket.io-client';
+import io from 'socket.io-client';
 
 
 // create the socket connection and pass 
 // the same one to all instances of the same user
-const socket = socketIOClient('http://192.168.1.135:3001')
+const socket = io('http://192.168.1.144:3001')
 export default socket;
 
 // event listening for starting a game and ending a game
@@ -47,16 +47,16 @@ export class NewGame extends React.Component{
       localStorage.setItem('currentGame', room)
 
       const players = details['players']
+      localStorage.setItem('players', JSON.stringify(players))
       
       // render with socket
-      ReactDOM.render(<InGame game_id={room} players={players} />, document.getElementById('root'));
+      ReactDOM.render(<InGame game_id={room}/>, document.getElementById('root'));
 
     });
   }
 
 
   render() {
-
     
     return (
       <center>
@@ -94,10 +94,21 @@ export class JoinGame extends React.Component {
   // joining game
   joinGame() {
     socket.emit('join', [this.state.game_id, this.state.name], function (details) {
-      const room = details['room']
+      // console.log(details)
+      // if succesfully joined
       if (details['success'] === "joined room") {
+
+        // set local storage game variable
+        const room = details['room']
         localStorage.setItem('currentGame', room)
-        console.log("successfully joined room")
+
+        // set players currently in lobby
+        const players = details['players']
+        localStorage.setItem('players', JSON.stringify(players))
+
+        // console.log("successfully joined room")
+        
+        // render the room 
         ReactDOM.render(<InGame game_id={room}/>, document.getElementById('root'))
       }
     })
@@ -119,6 +130,8 @@ export class JoinGame extends React.Component {
 
 export class InGame extends React.Component {
 
+  _isMounted = false
+
   constructor(props) {
     super(props)
     this.state = {
@@ -130,7 +143,7 @@ export class InGame extends React.Component {
   // leaving game
   leaveGame() {
     const game = localStorage.getItem('currentGame')
-    socket.emit('leave', game)
+    socket.emit('leave', game )
     localStorage.clear()
     ReactDOM.render(<App />, document.getElementById('root'))
   }
@@ -142,14 +155,14 @@ export class InGame extends React.Component {
   }
 
 
-  render() {
+  removePlayerFromState() {
+    
+  }
 
-
-    socket.on('newplayer', function (data) {
-      console.log(data);
-      console.log("new player")
-    })
-
+  componentDidMount() {
+    this._isMounted = true
+    
+   
 
     const currentGame = localStorage.getItem('currentGame')
     if (currentGame != null) {
@@ -158,6 +171,47 @@ export class InGame extends React.Component {
       })
     }
 
+
+    // on new player
+    socket.on('newplayer', (data) => {
+      console.log(data)
+      // data contains the name of the new user
+
+      // get the current players
+      let players = JSON.parse(localStorage.getItem('players'))
+
+      // append the newest player to the list
+      console.log("players looks like before ")
+      console.log(players)
+      players.push(data)
+      console.log("players looks like  after")
+      console.log(players)
+
+      // clear the storage 
+      localStorage.removeItem('players')
+
+      // set the player array
+      localStorage.setItem('players', JSON.stringify(players))
+      
+      // add player to list to display
+      //  playersList.push(<h3 key={data}>{data}</h3>)
+      // this.setState({
+      //     otherPlayers: this.state.otherPlayers.concat(data)
+      //   })
+      if (this._isMounted) {
+        this.forceUpdate()
+      }
+    })
+  }
+
+
+  componentWillUnmount(){
+    this._isMounted = false
+  }
+
+
+  render() {
+
     return (
       <div>
         <h1>You are currently in a game</h1>
@@ -165,14 +219,43 @@ export class InGame extends React.Component {
         <h1>{this.props.game_id}</h1>
 
         <h1>Current players</h1>
-        {/* <div>
-          {array}
-        </div> */}
+        <div>
+          {JSON.parse(localStorage.getItem('players'))}
+        </div>
 
         <button onClick={() => { this.leaveGame() }}>Leave game</button>
 
         <button onClick={() => { this.startGame() }}>Start game</button>
       </div>
+    )
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+export class Playing extends React.Component {
+
+  constructor(props) {
+    super(props)
+    this.state = {
+
+    }
+  }
+
+
+  render() {
+    return (
+      <h1>List of locations</h1>
     )
   }
 }
