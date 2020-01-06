@@ -134,10 +134,12 @@ export class InGame extends React.Component {
   _isMounted = false
 
   constructor(props) {
+
+    const players = JSON.parse(localStorage.getItem('players'))
     super(props)
     this.state = {
       game_id: '',
-      otherPlayers: []
+      otherPlayers: players
     }
   }
 
@@ -171,12 +173,27 @@ export class InGame extends React.Component {
     this._isMounted = true
 
 
+    // check to make sure currently in game
     const currentGame = localStorage.getItem('currentGame')
     if (currentGame != null) {
       socket.emit('rejoin', currentGame, function (details) {
         console.log(details)
       })
     }
+
+
+    // const players = JSON.parse(localStorage.getItem('players'))
+    // for (let i = 0; i < players.length; i++){
+    //   this.setState({
+    //     otherPlayers: [...this.state.otherPlayers, (players[i])]
+    //   })
+    //   console.log(this.state.otherPlayers)
+    // }
+    
+
+
+
+
 
 
     // on new player
@@ -206,6 +223,8 @@ export class InGame extends React.Component {
   componentWillUnmount(){
     this._isMounted = false
 
+
+    // remove the listener since it is a single page app
     socket.off('newplayer')
   }
 
@@ -228,7 +247,9 @@ export class InGame extends React.Component {
 
         <h1>Current players</h1>
         <div>
-          {JSON.parse(localStorage.getItem('players'))}
+            {this.state.otherPlayers.map((item, index) => {
+              return(<li key={index}>{item}</li>)
+            })}
         </div>
 
         <button onClick={() => { this.leaveGame() }}>Leave game</button>
