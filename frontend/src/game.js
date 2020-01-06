@@ -12,11 +12,6 @@ export default socket;
 
 // event listening for starting a game and ending a game
 
-
-
-
-
-
 // component responsible for creating a new game
 export class NewGame extends React.Component{
 

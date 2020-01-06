@@ -6,7 +6,21 @@ import { NewGame, JoinGame, Lobby } from './game.js';
 
 const App = () => {
 
+
+  // checks to see when last visit was
+  // after 2 hours, clear the storage on next visit
+  let hours = 2
+  let saved = localStorage.getItem('saved')
+  if (saved && (new Date().getTime() - saved > hours * 60 * 60 * 1000)) {
+    localStorage.clear()
+  }
+
+
+  // get current game
   const in_game = localStorage.getItem('currentGame');
+
+  // start new saved timer
+  localStorage.setItem('saved', new Date().getTime())
 
   if (in_game != null) {
     return (
