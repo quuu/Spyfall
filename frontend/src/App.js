@@ -15,8 +15,9 @@ const App = () => {
   }
   return (
     <center>
+      <h1>Spyfall</h1>
       <button onClick={ () => { createNewGame() }}>New Game</button>
-      <button onClick={ () => { joinGame() }}>Join Game</button>
+      <button onClick={() => { joinGame() }}>Join Game</button>
     </center>
   )
 }

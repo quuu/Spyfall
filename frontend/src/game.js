@@ -44,6 +44,8 @@ export class NewGame extends React.Component{
 
       const players = details['players']
       localStorage.setItem('players', JSON.stringify(players))
+
+      localStorage.setItem('self', this.state.name)
       
       // render with socket
       ReactDOM.render(<Lobby game_id={room} players={players} />, document.getElementById('root'));
@@ -103,6 +105,8 @@ export class JoinGame extends React.Component {
         const players = details['players']
         localStorage.setItem('players', JSON.stringify(players))
 
+        localStorage.setItem('self', this.state.name)
+
         console.log("successfully joined room")
         
         // render the players       
@@ -143,7 +147,7 @@ export class Lobby extends React.Component {
   leaveGame() {
     const game = localStorage.getItem('currentGame')
     // socket.off('newplayer')
-    socket.emit('leave', game )
+    socket.emit('leave', [game, localStorage.getItem('self')])
     localStorage.clear()
     ReactDOM.render(<App />, document.getElementById('root'))
   }
@@ -161,8 +165,11 @@ export class Lobby extends React.Component {
     })
   }
 
-  removePlayerFromState() {
-    
+  
+  updatePlayerState(players) {
+    this.setState({
+      otherPlayers: players
+    })
   }
 
   componentDidMount() {
@@ -203,6 +210,22 @@ export class Lobby extends React.Component {
       }
     })
 
+
+    socket.on('playerleave', (data) => {
+      console.log("player " + data  + ' left the game')
+      let players = JSON.parse(localStorage.getItem('players'))
+      players = players.filter((e) => { return e !== data })
+      
+      localStorage.removeItem('players')
+      
+      localStorage.setItem('players', JSON.stringify(players))
+
+      if (this._isMounted) {
+        this.updatePlayerState(players)
+      }
+    })
+
+
     socket.on('starting', (data) => {
       
       localStorage.setItem('in_game', true)
@@ -241,23 +264,25 @@ export class Lobby extends React.Component {
     }
 
     return (
-      <div>
-        <h1>You are currently in a game</h1>
-        <br/>
-        <h1>{this.props.game_id}</h1>
+      <center>
 
-        <h1>Current players</h1>
         <div>
-            {this.state.otherPlayers.map((item, index) => {
-              return(<li key={index}>{item}</li>)
-            })}
+          <br/>
+          This game: <h1>{this.props.game_id}</h1>
+
+          <h3>Current players</h3>
+          <div>
+              {this.state.otherPlayers.map((item, index) => {
+                return(<li key={index}>{item}</li>)
+              })}
+          </div>
+
+          <button onClick={() => { this.leaveGame() }}>Leave game</button>
+
+          <button onClick={() => { this.startGame() }}>Start game</button>
+          {/* <button onClick={() => { this.sendSelf() }}>Self test</button> */}
         </div>
-
-        <button onClick={() => { this.leaveGame() }}>Leave game</button>
-
-        <button onClick={() => { this.startGame() }}>Start game</button>
-        <button onClick={() => { this.sendSelf() }}>Self test</button>
-      </div>
+      </center>
     )
   }
 }
@@ -283,6 +308,7 @@ export class Playing extends React.Component {
     super(props)
     this.state = {
       players: this.props.players,
+      status: this.props.status,
 
       locations: [
         'Airplane',
@@ -319,12 +345,9 @@ export class Playing extends React.Component {
   
   endGame() {
 
-
     // emit socket signal to end the game
     // have server catch and send to everyone else
     socket.emit('end', localStorage.getItem('currentGame'))
-
-
 
   }
 
@@ -349,20 +372,31 @@ export class Playing extends React.Component {
   }
 
   render() {
+
+
+
+    if (this.state.status === 'spy') {
+      
+    }
     return (
       <div>
+        <h2>You are {this.state.status}</h2>
+          <center>
+            <h1>List of locations</h1>
+          </center>
+            {this.state.locations.map((item, index) => {
+              return (<li key={index}>{item}</li>)
+            })}
+          <center>
+            <h1>List of players</h1>
 
-        <h1>List of locations</h1>
-        {this.state.locations.map((item, index) => {
-          return (<li key={index}>{item}</li>)
-        })}
-        <h1>List of players</h1>
-        {this.state.players.map((item, index) => {
-          return (<li key={index}>{item}</li>)
-        })}
+          </center>
+          {this.state.players.map((item, index) => {
+            return (<li key={index}>{item}</li>)
+          })}
 
-        <button onClick={() => { this.endGame() }}>End Game</button>
-      </div>
+          <button onClick={() => { this.endGame() }}>End Game</button>
+        </div>
     )
   }
 }
