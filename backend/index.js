@@ -24,7 +24,7 @@ const port = 3001
 
 // TODO use mongo to keep track of game and player names
 // instead of storing it in memory
-MongoClient.connect(url, { useUnifiedTopology: true }, function(err, client) {
+MongoClient.connect(url, { useUnifiedTopology: true }, (err, client) => {
   assert.equal(null, err);
   const db = client.db('spyfall');
 
@@ -36,7 +36,7 @@ MongoClient.connect(url, { useUnifiedTopology: true }, function(err, client) {
 
 
   // once connected, it means they are creating a new room or joining a room
-  io.on('connection', function (socket) {
+  io.on('connection', (socket) => {
 
     // printing out the ip address to save for later
     console.log(socket.handshake.address)
@@ -44,7 +44,7 @@ MongoClient.connect(url, { useUnifiedTopology: true }, function(err, client) {
 
    
     // creating a new room for people to join
-    socket.on('create', function (firstPlayer, fn) {
+    socket.on('create', (firstPlayer, fn) => {
       
 
       const uuid = uuidv4();
@@ -76,7 +76,7 @@ MongoClient.connect(url, { useUnifiedTopology: true }, function(err, client) {
     // emits a signal to all connected players with message 
     //    saying that a new player has joined with username
     // emits to sender the other players in the game
-    socket.on('join', function (data, fn) {
+    socket.on('join', (data, fn) => {
       console.log(data)
       // console.log(io.sockets.adapter.rooms)
 
@@ -100,11 +100,11 @@ MongoClient.connect(url, { useUnifiedTopology: true }, function(err, client) {
 
     })
 
-    socket.on('test', function (data, fn) {
+    socket.on('test', (data, fn) => {
       socket.emit('newplayer', 'T')
     })
 
-    socket.on('rejoin', function (data, fn) {
+    socket.on('rejoin', (data, fn) => {
       socket.join(data)
       console.log(io.sockets.adapter.rooms)
       console.log("rejoined room " + data)
@@ -113,7 +113,7 @@ MongoClient.connect(url, { useUnifiedTopology: true }, function(err, client) {
   
 
     // when a player quits, leave the room 
-    socket.on('leave', function (data) {
+    socket.on('leave', (data) => {
       console.log(io.sockets.adapter.rooms)
       socket.leave(data)
       console.log(io.sockets.adapter.rooms)
@@ -122,22 +122,26 @@ MongoClient.connect(url, { useUnifiedTopology: true }, function(err, client) {
     })
 
     // start the game
-    socket.on('start', function (data) {
+    socket.on('start', (data) => {
       console.log("starting game " + data)
       io.to(data).emit('starting')
+
+      // TODO
+      // loop trhough the clients, and send a "spy" message
+      // to one, and send "start" to the others
     })
 
-    socket.on('end', function (data) {
+    socket.on('end', (data) => {
       console.log("ending game " + data)
       io.to(data).emit('ending')
     })
 
     // quitting the game
-    socket.on('disconnect', function() {
+    socket.on('disconnect', () => {
       console.log('a user disconnected')
 
     })
-    socket.on('other event', function (data) {
+    socket.on('other event', (data) => {
       console.log(data)
     })
   })
@@ -147,6 +151,6 @@ MongoClient.connect(url, { useUnifiedTopology: true }, function(err, client) {
 
 
 
-http.listen(port, function(){
+http.listen(port, () => {
   console.log('listening on *:'+ port);
 });

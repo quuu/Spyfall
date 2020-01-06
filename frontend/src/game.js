@@ -38,7 +38,7 @@ export class NewGame extends React.Component{
   registerUser() {
 
     // emit a create signal
-    socket.emit('create', this.state.name, function (details) {
+    socket.emit('create', this.state.name, (details) => {
       const room = details['room']
       localStorage.setItem('currentGame', room)
 
@@ -46,7 +46,7 @@ export class NewGame extends React.Component{
       localStorage.setItem('players', JSON.stringify(players))
       
       // render with socket
-      ReactDOM.render(<InGame game_id={room} players={players} />, document.getElementById('root'));
+      ReactDOM.render(<Lobby game_id={room} players={players} />, document.getElementById('root'));
 
     });
   }
@@ -90,7 +90,7 @@ export class JoinGame extends React.Component {
 
   // joining game
   joinGame() {
-    socket.emit('join', [this.state.game_id, this.state.name], function (details) {
+    socket.emit('join', [this.state.game_id, this.state.name], (details) =>  {
       console.log(details)
       // if succesfully joined
       if (details['success'] === "joined room") {
@@ -106,7 +106,7 @@ export class JoinGame extends React.Component {
         console.log("successfully joined room")
         
         // render the players       
-        ReactDOM.render(<InGame game_id={room}/>, document.getElementById('root'))
+        ReactDOM.render(<Lobby game_id={room}/>, document.getElementById('root'))
       }
     })
   }
@@ -125,7 +125,7 @@ export class JoinGame extends React.Component {
   }
 }
 
-export class InGame extends React.Component {
+export class Lobby extends React.Component {
 
   _isMounted = false
 
@@ -172,7 +172,7 @@ export class InGame extends React.Component {
     // check to make sure currently in game
     const currentGame = localStorage.getItem('currentGame')
     if (currentGame != null) {
-      socket.emit('rejoin', currentGame, function (details) {
+      socket.emit('rejoin', currentGame, (details) => {
         console.log(details)
       })
     }
@@ -223,7 +223,7 @@ export class InGame extends React.Component {
 
 
   sendSelf() {
-    socket.emit('test', function (data) {
+    socket.emit('test', (data) => {
       console.log('received self test')
       console.log(data)
     })
@@ -233,7 +233,7 @@ export class InGame extends React.Component {
   render() {
 
 
-    if (localStorage.getItem('in_game')  == 'true') {
+    if (localStorage.getItem('in_game')  === 'true') {
       console.log("in game")
       return (
         <Playing players={this.state.otherPlayers}/>
@@ -319,17 +319,12 @@ export class Playing extends React.Component {
   
   endGame() {
 
-    
-    // localStorage.setItem('in_game', false)
-    // if (this._isMounted) {
-    //   this.forceUpdate()
-    // }
-
-    socket.emit('end', localStorage.getItem('currentGame'))
-
 
     // emit socket signal to end the game
     // have server catch and send to everyone else
+    socket.emit('end', localStorage.getItem('currentGame'))
+
+
 
   }
 
@@ -341,7 +336,7 @@ export class Playing extends React.Component {
 
       console.log("game ending from server")
       localStorage.setItem('in_game', false)
-      ReactDOM.render(<InGame game_id={localStorage.getItem('currentGame')}/>, document.getElementById('root'))
+      ReactDOM.render(<Lobby game_id={localStorage.getItem('currentGame')}/>, document.getElementById('root'))
     })
   }
 

@@ -1,17 +1,16 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './App.css';
-import { NewGame, JoinGame, InGame } from './game.js';
+import { NewGame, JoinGame, Lobby } from './game.js';
 
 
-
-function App() {
+const App = () => {
 
   const in_game = localStorage.getItem('currentGame');
 
   if (in_game != null) {
     return (
-      <InGame game_id={in_game} />
+      <Lobby game_id={in_game} />
     )
   }
   return (
@@ -24,12 +23,12 @@ function App() {
 
 
 
-function createNewGame() {
+const createNewGame = () => {
   ReactDOM.render(<NewGame />, document.getElementById('root'));
 }
 
 
-function joinGame() {
+const joinGame = () => {
   ReactDOM.render(<JoinGame />, document.getElementById('root'));
 }
 
