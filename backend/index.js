@@ -123,8 +123,13 @@ MongoClient.connect(url, { useUnifiedTopology: true }, function(err, client) {
 
     // start the game
     socket.on('start', function (data) {
-      console.log("starting game")
+      console.log("starting game " + data)
       io.to(data).emit('starting')
+    })
+
+    socket.on('end', function (data) {
+      console.log("ending game " + data)
+      io.to(data).emit('ending')
     })
 
     // quitting the game

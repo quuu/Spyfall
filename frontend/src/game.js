@@ -11,13 +11,9 @@ const socket = io('http://192.168.1.144:3001')
 export default socket;
 
 // event listening for starting a game and ending a game
-socket.on('starting', function (data) {
-  console.log("starting from server")
-})
 
-socket.on('ending', function (data) {
-  console.log("game ending from server")
-})
+
+
 
 
 
@@ -182,20 +178,6 @@ export class InGame extends React.Component {
     }
 
 
-    // const players = JSON.parse(localStorage.getItem('players'))
-    // for (let i = 0; i < players.length; i++){
-    //   this.setState({
-    //     otherPlayers: [...this.state.otherPlayers, (players[i])]
-    //   })
-    //   console.log(this.state.otherPlayers)
-    // }
-    
-
-
-
-
-
-
     // on new player
     socket.on('newplayer', (data) => {
       console.log(data)
@@ -212,10 +194,19 @@ export class InGame extends React.Component {
 
       // set the player array
       localStorage.setItem('players', JSON.stringify(players))
+
+      // update state
+      this.addPlayerToState(data)
       
       if (this._isMounted) {
         this.forceUpdate()
       }
+    })
+
+    socket.on('starting', (data) => {
+      
+      localStorage.setItem('in_game', true)
+      ReactDOM.render(<Playing players={this.state.otherPlayers}/>, document.getElementById('root'))
     })
   }
 
@@ -226,6 +217,8 @@ export class InGame extends React.Component {
 
     // remove the listener since it is a single page app
     socket.off('newplayer')
+
+    socket.off('starting')
   }
 
 
@@ -238,6 +231,14 @@ export class InGame extends React.Component {
 
 
   render() {
+
+
+    if (localStorage.getItem('in_game')  == 'true') {
+      console.log("in game")
+      return (
+        <Playing players={this.state.otherPlayers}/>
+      )
+    }
 
     return (
       <div>
@@ -275,17 +276,98 @@ export class InGame extends React.Component {
 
 export class Playing extends React.Component {
 
+
+  _isMounted = false
+
   constructor(props) {
     super(props)
     this.state = {
+      players: this.props.players,
 
+      locations: [
+        'Airplane',
+        'Bank',
+        'Beach',
+        'Broadway Theater',
+        'Casino',
+        'Cathedral',
+        'Circus Tent',
+        'Corporate Party',
+        'Crusader Army',
+        'Day Spa',
+        'Embassy',
+        'Hospital',
+        'Hotel',
+        'Military Base',
+        'Movie Studio',
+        'Ocean Liner',
+        'Passenger Train',
+        'Pirate Ship',
+        'Polar Station',
+        'Police Station',
+        'Restaurant',
+        'School',
+        'Service Station',
+        'Space Station',
+        'Submarine',
+        'Supermarket',
+        'University']
     }
   }
 
 
+  
+  endGame() {
+
+    
+    // localStorage.setItem('in_game', false)
+    // if (this._isMounted) {
+    //   this.forceUpdate()
+    // }
+
+    socket.emit('end', localStorage.getItem('currentGame'))
+
+
+    // emit socket signal to end the game
+    // have server catch and send to everyone else
+
+  }
+
+  componentDidMount() {
+
+    this._isMounted = true
+
+    socket.on('ending', (data) => {
+
+      console.log("game ending from server")
+      localStorage.setItem('in_game', false)
+      ReactDOM.render(<InGame game_id={localStorage.getItem('currentGame')}/>, document.getElementById('root'))
+    })
+  }
+
+
+  componentWillUnmount() {
+    
+    this._isMounted = false 
+
+    socket.off('end')
+  }
+
   render() {
     return (
-      <h1>List of locations</h1>
+      <div>
+
+        <h1>List of locations</h1>
+        {this.state.locations.map((item, index) => {
+          return (<li key={index}>{item}</li>)
+        })}
+        <h1>List of players</h1>
+        {this.state.players.map((item, index) => {
+          return (<li key={index}>{item}</li>)
+        })}
+
+        <button onClick={() => { this.endGame() }}>End Game</button>
+      </div>
     )
   }
 }
