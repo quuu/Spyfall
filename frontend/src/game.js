@@ -9,7 +9,7 @@ import Grid from '@material-ui/core/Grid';
 
 // create the socket connection and pass 
 // the same one to all instances of the same user
-const socket = io('http://192.168.1.144:3001')
+const socket = io('http://localhost:3001')
 export default socket;
 
 
