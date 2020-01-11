@@ -121,6 +121,10 @@ MongoClient.connect(url, { useUnifiedTopology: true }, (err, client) => {
       // let everyone in the room know
       io.to(data[0]).emit('playerleave', data[1])
 
+      if (games[data[0]] == null) {
+        return
+      }
+      
       // remove that player from the current game storage
       games[data[0]] = games[data[0]].filter((e) => { return e != data[1] })
 
@@ -128,6 +132,9 @@ MongoClient.connect(url, { useUnifiedTopology: true }, (err, client) => {
 
     // start the game
     socket.on('start', (data) => {
+      if (io.sockets.adapter.rooms[data[0]] == null) {
+        return
+      }
       let roster = io.sockets.adapter.rooms[data[0]].sockets
       
       const spy = Math.floor((Math.random() * Object.keys(roster).length));

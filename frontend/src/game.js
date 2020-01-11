@@ -3,12 +3,17 @@ import ReactDOM from 'react-dom';
 import './game.css';
 import App from './App.js'
 import io from 'socket.io-client';
-
+import Button from '@material-ui/core/Button';
+import TextField from '@material-ui/core/TextField'
+import Grid from '@material-ui/core/Grid';
+import { makeStyles } from '@material-ui/core/styles'
 
 // create the socket connection and pass 
 // the same one to all instances of the same user
 const socket = io('http://192.168.1.144:3001')
 export default socket;
+
+
 
 // event listening for starting a game and ending a game
 
@@ -53,11 +58,22 @@ export class NewGame extends React.Component{
 
     
     return (
-      <center>
+        
+      <Grid container justify="center" spacing={2}>
 
-        Name<input type="text" value={this.state.name} onChange={this.handleChange}></input>
-        <button onClick={() => { this.registerUser() }}>Go</button>
-      </center>
+        {/* <Grid item>
+          <h2>Name</h2>
+        </Grid> */}
+
+        <Grid item>
+          <TextField id="filled-size-small" label="Name" variant="filled" size="small" type="text" value={this.state.name} onChange={this.handleChange}></TextField>
+        </Grid>
+
+        <Grid item>
+          <Button size="small" variant="outlined" color="default"  onClick={() => { this.registerUser() }}>Go</Button>
+        </Grid>
+
+      </Grid>
     )
   }
 }
@@ -112,14 +128,32 @@ export class JoinGame extends React.Component {
 
   render() {
     return (
-      <center>
+      <Grid container justify="center" spacing={2}>
 
-        Game ID<input type="text" value={this.state.game_id} onChange={this.handleChangeGameID}></input>
-        <button onClick={() => { this.joinGame() }}>Join</button>
+        <Grid item>
+        <TextField label="Game ID"
+          id="filled-size-small"
+          defaultValue="Small"
+          variant="filled"
+          size="small" type="text" value={this.state.game_id} onChange={this.handleChangeGameID}></TextField>
+        </Grid>
+        <Grid item>
+        </Grid>
+        <Grid item>
+        <TextField label="Name"
+          id="filled-size-small"
+          defaultValue="Small"
+          variant="filled"
+          size="small" type="text" value={this.state.name} onChange={this.handleChangeName}></TextField> 
+        </Grid>
+        <Grid item>
+          <Button variant="outlined" color="default"  onClick={() => { this.joinGame() }}>Join</Button>
+          
+        </Grid>
 
-        Name<input type="text" value={this.state.name} onChange={this.handleChangeName}></input>
+      </Grid>
 
-      </center>
+      
     )
   }
 }
@@ -274,25 +308,14 @@ export class Lobby extends React.Component {
               })}
           </div>
 
-          <button onClick={() => { this.leaveGame() }}>Leave game</button>
+          <Button size="small" variant="outlined" color="default"  onClick={() => { this.leaveGame() }}>Leave game</Button>
 
-          <button onClick={() => { this.startGame() }}>Start game</button>
-          {/* <button onClick={() => { this.sendSelf() }}>Self test</button> */}
+          <Button size="small" variant="outlined" color="default"  onClick={() => { this.startGame() }}>Start game</Button>
         </div>
       </center>
     )
   }
 }
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -374,11 +397,9 @@ export class Playing extends React.Component {
 
   render() {
 
-
-
     return (
       <div>
-        <h2>You are {this.state.role}</h2>
+        <h2>You are <u>{this.state.role}</u></h2>
           <center>
             <h1>List of locations</h1>
           </center>
@@ -393,7 +414,7 @@ export class Playing extends React.Component {
             return (<li key={index}>{item}</li>)
           })}
 
-          <button onClick={() => { this.endGame() }}>End Game</button>
+        <Button size="small" variant="outlined" color="default" onClick={() => { this.endGame() }}>End Game</Button>
         </div>
     )
   }

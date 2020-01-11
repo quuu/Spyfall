@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './App.css';
 import { NewGame, JoinGame, Lobby } from './game.js';
-
+import Button from '@material-ui/core/Button';
 
 const App = () => {
 
@@ -30,8 +30,9 @@ const App = () => {
   return (
     <center>
       <h1>Spyfall</h1>
-      <button onClick={ () => { createNewGame() }}>New Game</button>
-      <button onClick={() => { joinGame() }}>Join Game</button>
+      <Button size="small" variant="outlined" color="primary" onClick={() => { createNewGame() }}>New Game</Button>
+      <br/>
+      <Button size="small" variant="outlined" color="default" onClick={() => { joinGame() }}>Join Game</Button>
     </center>
   )
 }
