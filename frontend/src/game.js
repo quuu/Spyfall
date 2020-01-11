@@ -6,7 +6,6 @@ import io from 'socket.io-client';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField'
 import Grid from '@material-ui/core/Grid';
-import { makeStyles } from '@material-ui/core/styles'
 
 // create the socket connection and pass 
 // the same one to all instances of the same user
@@ -60,10 +59,6 @@ export class NewGame extends React.Component{
     return (
         
       <Grid container justify="center" spacing={2}>
-
-        {/* <Grid item>
-          <h2>Name</h2>
-        </Grid> */}
 
         <Grid item>
           <TextField id="filled-size-small" label="Name" variant="filled" size="small" type="text" value={this.state.name} onChange={this.handleChange}></TextField>

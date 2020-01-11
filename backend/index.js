@@ -1,6 +1,6 @@
 const express = require('express')
-const MongoClient = require('mongodb').MongoClient;
-const assert = require('assert');
+// const MongoClient = require('mongodb').MongoClient;
+// const assert = require('assert');
 const uuidv4 = require('uuid/v4');
 const app = express()
 const cors = require('cors')
@@ -28,18 +28,18 @@ const port = 3001
 
 // TODO use mongo to keep track of game and player names
 // instead of storing it in memory
-MongoClient.connect(url, { useUnifiedTopology: true }, (err, client) => {
-  assert.equal(null, err);
-  const db = client.db('spyfall');
+// MongoClient.connect(url, { useUnifiedTopology: true }, (err, client) => {
+//   assert.equal(null, err);
+//   const db = client.db('spyfall');
 
-  db.collection('games').dropIndex({ "created": 1 })
+//   db.collection('games').dropIndex({ "created": 1 })
 
-  db.collection('games').createIndex({ "created": 1 }, { expireAfterSeconds: 50000 })
+//   db.collection('games').createIndex({ "created": 1 }, { expireAfterSeconds: 50000 })
 
-  console.log("Connected successfully to server");
+//   console.log("Connected successfully to server");
 
 
-  // once connected, it means they are creating a new room or joining a room
+//   // once connected, it means they are creating a new room or joining a room
   io.on('connection', (socket) => {
 
     // printing out the ip address to save for later
@@ -124,7 +124,7 @@ MongoClient.connect(url, { useUnifiedTopology: true }, (err, client) => {
       if (games[data[0]] == null) {
         return
       }
-      
+
       // remove that player from the current game storage
       games[data[0]] = games[data[0]].filter((e) => { return e != data[1] })
 
@@ -177,7 +177,7 @@ MongoClient.connect(url, { useUnifiedTopology: true }, (err, client) => {
   })
  
  
-});
+// });
 
 
 
