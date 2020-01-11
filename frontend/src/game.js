@@ -150,7 +150,8 @@ export class Lobby extends React.Component {
   // starting game
   startGame() {
     const game = localStorage.getItem('currentGame')
-    socket.emit('start',  game)
+    const players = JSON.parse(localStorage.getItem('players'))
+    socket.emit('start',  [game, players])
   }
 
 
@@ -224,7 +225,8 @@ export class Lobby extends React.Component {
     socket.on('starting', (data) => {
       
       localStorage.setItem('in_game', true)
-      ReactDOM.render(<Playing players={this.state.otherPlayers}/>, document.getElementById('root'))
+      console.log(data)
+      ReactDOM.render(<Playing players={this.state.otherPlayers} />, document.getElementById('root'))
     })
   }
 

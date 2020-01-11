@@ -124,8 +124,12 @@ MongoClient.connect(url, { useUnifiedTopology: true }, (err, client) => {
 
     // start the game
     socket.on('start', (data) => {
-      console.log("starting game " + data)
-      io.to(data).emit('starting')
+      let roster = io.sockets.adapter.rooms[data[0]].sockets
+     
+      // emit to each a starting with the 
+      Object.keys(roster).forEach((key, index) => {
+        io.to(key).emit('starting')
+      })
 
       // TODO
       // loop trhough the clients, and send a "spy" message
