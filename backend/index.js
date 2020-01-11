@@ -7,6 +7,7 @@ const cors = require('cors')
 const http = require('http').createServer(app);
 const io = require('socket.io')(http);
 const bodyParser = require('body-parser');
+const fs = require('fs');
 
 const url = 'mongodb://localhost:27017';
 
@@ -14,6 +15,9 @@ const url = 'mongodb://localhost:27017';
 app.use(cors())
 app.use(bodyParser.json()); // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
+
+
+const locations = fs.readFileSync('locations.txt').toString().split("\n")
 
 
 // to keep track of games and the players in that game
@@ -125,10 +129,23 @@ MongoClient.connect(url, { useUnifiedTopology: true }, (err, client) => {
     // start the game
     socket.on('start', (data) => {
       let roster = io.sockets.adapter.rooms[data[0]].sockets
+      
+      const spy = Math.floor((Math.random() * Object.keys(roster).length));
+
+      const location = locations[Math.floor((Math.random() * locations.length))]
      
       // emit to each a starting with the 
       Object.keys(roster).forEach((key, index) => {
-        io.to(key).emit('starting')
+
+        if (index === spy) {
+          io.to(key).emit('starting', 'spy')
+          // fn({'location': 'spy'})
+
+        }
+        else {
+          io.to(key).emit('starting', location)
+          // fn({'location': location})
+        }
       })
 
       // TODO

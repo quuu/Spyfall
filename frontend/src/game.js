@@ -226,7 +226,7 @@ export class Lobby extends React.Component {
       
       localStorage.setItem('in_game', true)
       console.log(data)
-      ReactDOM.render(<Playing players={this.state.otherPlayers} />, document.getElementById('root'))
+      ReactDOM.render(<Playing players={this.state.otherPlayers} role={data}/>, document.getElementById('root'))
     })
   }
 
@@ -306,7 +306,11 @@ export class Playing extends React.Component {
     this.state = {
       players: this.props.players,
       status: this.props.status,
+      role: this.props.role,
 
+
+      // TODO
+      // move this out to a seperate text file and parse it
       locations: [
         'Airplane',
         'Bank',
@@ -372,12 +376,9 @@ export class Playing extends React.Component {
 
 
 
-    if (this.state.status === 'spy') {
-      
-    }
     return (
       <div>
-        <h2>You are {this.state.status}</h2>
+        <h2>You are {this.state.role}</h2>
           <center>
             <h1>List of locations</h1>
           </center>
