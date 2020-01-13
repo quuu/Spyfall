@@ -181,6 +181,6 @@ const port = 3001
 
 
 
-http.listen(port, () => {
+http.listen(port, '0.0.0.0', () => {
   console.log('listening on *:'+ port);
 });
