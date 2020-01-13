@@ -9,7 +9,7 @@ import Grid from '@material-ui/core/Grid';
 
 // create the socket connection and pass 
 // the same one to all instances of the same user
-const socket = io('http://server:3001')
+const socket = io('http://localhost:3001')
 export default socket;
 
 
@@ -394,22 +394,32 @@ export class Playing extends React.Component {
 
     return (
       <div>
-        <h2>You are <u>{this.state.role}</u></h2>
+        <Grid container justify="center" spacing={2}>
+          <h2>You are <u>{this.state.role}</u></h2>
+        </Grid>
           <center>
             <h1>List of locations</h1>
-          </center>
+        </center>
+        <Grid container justify="center" spacing={2}>
+          <Grid item>
             {this.state.locations.map((item, index) => {
-              return (<li key={index}>{item}</li>)
+                return (<li key={index}>{item}</li>)
             })}
-          <center>
-            <h1>List of players</h1>
-
-          </center>
+          </Grid>
+        </Grid>
+        <center>
+          <h1>List of players</h1>
+        </center>
+        <Grid container justify="center" spacing={2}>
+          <Grid item>
           {this.state.players.map((item, index) => {
             return (<li key={index}>{item}</li>)
           })}
-
-        <Button size="small" variant="outlined" color="default" onClick={() => { this.endGame() }}>End Game</Button>
+          </Grid>
+        </Grid>
+        <Grid container justify="center" spacing={2}>
+          <Button size="small" variant="outlined" color="default" onClick={() => { this.endGame() }}>End Game</Button>
+        </Grid>
         </div>
     )
   }
