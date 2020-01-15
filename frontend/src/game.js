@@ -15,7 +15,6 @@ export default socket;
 
 
 // event listening for starting a game and ending a game
-
 // component responsible for creating a new game
 export class NewGame extends React.Component{
 
@@ -57,7 +56,9 @@ export class NewGame extends React.Component{
 
     
     return (
-        
+      <div>
+
+        <br/>
       <Grid container justify="center" spacing={2}>
 
         <Grid item>
@@ -69,6 +70,7 @@ export class NewGame extends React.Component{
         </Grid>
 
       </Grid>
+        </div>
     )
   }
 }
@@ -125,6 +127,7 @@ export class JoinGame extends React.Component {
     return (
       <Grid container justify="center" spacing={2}>
 
+        <br/>
         <Grid item>
         <TextField label="Game ID"
           id="filled-size-small"
@@ -170,7 +173,6 @@ export class Lobby extends React.Component {
   // leaving game
   leaveGame() {
     const game = localStorage.getItem('currentGame')
-    // socket.off('newplayer')
     socket.emit('leave', [game, localStorage.getItem('self')])
     localStorage.clear()
     ReactDOM.render(<App />, document.getElementById('root'))
@@ -282,6 +284,7 @@ export class Lobby extends React.Component {
   render() {
 
 
+    // determine if the player is in game or not
     if (localStorage.getItem('in_game')  === 'true') {
       console.log("in game")
       return (
@@ -320,12 +323,18 @@ export class Playing extends React.Component {
   _isMounted = false
 
   constructor(props) {
+
     super(props)
+
+    // set the local storage for when a page refresh happens
+    if (this.props.role != null) {
+      localStorage.setItem('role', this.props.role)
+    }
+
     this.state = {
       players: this.props.players,
       status: this.props.status,
       role: this.props.role,
-
 
       // TODO
       // move this out to a seperate text file and parse it
@@ -374,8 +383,9 @@ export class Playing extends React.Component {
 
     this._isMounted = true
 
-    socket.on('ending', (data) => {
 
+    // in this component, should only watch for game ending
+    socket.on('ending', (data) => {
       console.log("game ending from server")
       localStorage.setItem('in_game', false)
       ReactDOM.render(<Lobby game_id={localStorage.getItem('currentGame')}/>, document.getElementById('root'))
@@ -392,10 +402,20 @@ export class Playing extends React.Component {
 
   render() {
 
+    // get the role of the player
+    let role;
+    if (this.state.role != null) {
+      role = this.state.role
+    }
+    else {
+      role = localStorage.getItem('role')
+    }
+
+    // return the component
     return (
       <div>
         <Grid container justify="center" spacing={2}>
-          <h2>You are <u>{this.state.role}</u></h2>
+          <h2>You are <u>{role}</u></h2>
         </Grid>
           <center>
             <h1>List of locations</h1>
