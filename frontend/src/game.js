@@ -317,6 +317,7 @@ export class Lobby extends React.Component {
 
 
 
+// component to show when the game is being played
 export class Playing extends React.Component {
 
 
@@ -333,9 +334,11 @@ export class Playing extends React.Component {
     if (localStorage.getItem('locations') == null) {
       localStorage.setItem('locations', JSON.stringify(this.props.locations))
     }
+    if (localStorage.getItem('players') == null) {
+      localStorage.setItem('players', JSON.stringify(this.props.players))
+    }
 
   }
-
 
   
   endGame() {
@@ -349,7 +352,6 @@ export class Playing extends React.Component {
   componentDidMount() {
 
     this._isMounted = true
-
 
     // in this component, should only watch for game ending
     socket.on('ending', (data) => {
@@ -369,8 +371,7 @@ export class Playing extends React.Component {
 
   render() {
 
-    // get the role of the player
-
+    // get the game variables needed
     let players = JSON.parse(localStorage.getItem('players'))
     let role = localStorage.getItem('role')
     let locations = JSON.parse(localStorage.getItem('locations'))

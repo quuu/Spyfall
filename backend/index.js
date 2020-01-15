@@ -145,12 +145,12 @@ const port = 3001
       Object.keys(roster).forEach((key, index) => {
 
         if (index === spy) {
-          io.to(key).emit('starting', 'spy')
+          io.to(key).emit('starting', ['spy', locations])
           // fn({'location': 'spy'})
 
         }
         else {
-          io.to(key).emit('starting', location)
+          io.to(key).emit('starting', [location, locations])
           // fn({'location': location})
         }
       })

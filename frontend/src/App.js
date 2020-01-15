@@ -31,7 +31,6 @@ const App = () => {
     <center>
       <h1>Spyfall</h1>
       <Button size="small" variant="outlined" color="primary" onClick={() => { createNewGame() }}>New Game</Button>
-      <br/>
       <Button size="small" variant="outlined" color="default" onClick={() => { joinGame() }}>Join Game</Button>
     </center>
   )
