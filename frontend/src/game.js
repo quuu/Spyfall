@@ -253,11 +253,11 @@ export class Lobby extends React.Component {
     })
 
 
-    socket.on('starting', (data) => {
+    socket.on('starting', (data, locations) => {
       
       localStorage.setItem('in_game', true)
       console.log(data)
-      ReactDOM.render(<Playing players={this.state.otherPlayers} role={data}/>, document.getElementById('root'))
+      ReactDOM.render(<Playing players={this.state.otherPlayers} role={data[0]} locations={data[1]}/>, document.getElementById('root'))
     })
   }
 
@@ -327,46 +327,13 @@ export class Playing extends React.Component {
     super(props)
 
     // set the local storage for when a page refresh happens
-    if (this.props.role != null) {
+    if (localStorage.getItem('role') == null) {
       localStorage.setItem('role', this.props.role)
     }
-
-    this.state = {
-      players: this.props.players,
-      status: this.props.status,
-      role: this.props.role,
-
-      // TODO
-      // move this out to a seperate text file and parse it
-      locations: [
-        'Airplane',
-        'Bank',
-        'Beach',
-        'Broadway Theater',
-        'Casino',
-        'Cathedral',
-        'Circus Tent',
-        'Corporate Party',
-        'Crusader Army',
-        'Day Spa',
-        'Embassy',
-        'Hospital',
-        'Hotel',
-        'Military Base',
-        'Movie Studio',
-        'Ocean Liner',
-        'Passenger Train',
-        'Pirate Ship',
-        'Polar Station',
-        'Police Station',
-        'Restaurant',
-        'School',
-        'Service Station',
-        'Space Station',
-        'Submarine',
-        'Supermarket',
-        'University']
+    if (localStorage.getItem('locations') == null) {
+      localStorage.setItem('locations', JSON.stringify(this.props.locations))
     }
+
   }
 
 
@@ -403,13 +370,11 @@ export class Playing extends React.Component {
   render() {
 
     // get the role of the player
-    let role;
-    if (this.state.role != null) {
-      role = this.state.role
-    }
-    else {
-      role = localStorage.getItem('role')
-    }
+
+    let players = JSON.parse(localStorage.getItem('players'))
+    let role = localStorage.getItem('role')
+    let locations = JSON.parse(localStorage.getItem('locations'))
+
 
     // return the component
     return (
@@ -422,7 +387,7 @@ export class Playing extends React.Component {
         </center>
         <Grid container justify="center" spacing={2}>
           <Grid item>
-            {this.state.locations.map((item, index) => {
+            {locations.map((item, index) => {
                 return (<li key={index}>{item}</li>)
             })}
           </Grid>
@@ -432,7 +397,7 @@ export class Playing extends React.Component {
         </center>
         <Grid container justify="center" spacing={2}>
           <Grid item>
-          {this.state.players.map((item, index) => {
+          {players.map((item, index) => {
             return (<li key={index}>{item}</li>)
           })}
           </Grid>
