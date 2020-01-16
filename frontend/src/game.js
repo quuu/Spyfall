@@ -120,6 +120,9 @@ export class JoinGame extends React.Component {
         // render the players       
         ReactDOM.render(<Lobby game_id={room}/>, document.getElementById('root'))
       }
+      else {
+        alert('Not a valid room')
+      }
     })
   }
 
@@ -130,8 +133,7 @@ export class JoinGame extends React.Component {
         <br/>
         <Grid item>
         <TextField label="Game ID"
-          id="filled-size-small"
-          defaultValue="Small"
+          id="filled-size-small game-id"
           variant="filled"
           size="small" type="text" value={this.state.game_id} onChange={this.handleChangeGameID}></TextField>
         </Grid>
@@ -139,8 +141,7 @@ export class JoinGame extends React.Component {
         </Grid>
         <Grid item>
         <TextField label="Name"
-          id="filled-size-small"
-          defaultValue="Small"
+          id="filled-size-small name"
           variant="filled"
           size="small" type="text" value={this.state.name} onChange={this.handleChangeName}></TextField> 
         </Grid>
@@ -256,7 +257,6 @@ export class Lobby extends React.Component {
     socket.on('starting', (data, locations) => {
       
       localStorage.setItem('in_game', true)
-      console.log(data)
       ReactDOM.render(<Playing players={this.state.otherPlayers} role={data[0]} locations={data[1]}/>, document.getElementById('root'))
     })
   }

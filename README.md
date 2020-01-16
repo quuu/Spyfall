@@ -13,6 +13,8 @@ The game ends once the players unanimously vote on who they think is the Spy, wh
 
 This implementation is written with React on the frontend, and Socket.io on the backend. It is a single page application that relies on rendering different components over the root component depending on which part of the application the user is on.
 
+Regardless of refreshes while users are using the app, the clients will be kept up to date with the newest data via the server socket connection.
+
 ## Usage
 
 Use the code in this repository to host the game on a computer and have others connect to it.
